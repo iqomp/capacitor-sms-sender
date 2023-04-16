@@ -20,13 +20,13 @@ export interface SmsSenderOptions {
      * SMS Message id
      * @since 1.0.0
      */
-    id: int,
+    id: number,
 
     /**
      * Device SIM index
      * @since 1.0.0
      */
-    sim: int,
+    sim: number,
 
     /**
      * Target phone number
