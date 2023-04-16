@@ -134,7 +134,7 @@ Remove all registered listeners
 
 | Prop         | Type                | Description                                                          | Since |
 | ------------ | ------------------- | -------------------------------------------------------------------- | ----- |
-| **`id`**     | <code>int</code>    | Message SMS id                                                       | 1.0.0 |
+| **`id`**     | <code>number</code> | Message SMS id                                                       | 1.0.0 |
 | **`status`** | <code>string</code> | Delivery status, possible value are 'FAILED', 'SENT', or 'DELIVERED' | 1.0.0 |
 
 
@@ -142,8 +142,8 @@ Remove all registered listeners
 
 | Prop        | Type                | Description         | Since |
 | ----------- | ------------------- | ------------------- | ----- |
-| **`id`**    | <code>int</code>    | SMS Message id      | 1.0.0 |
-| **`sim`**   | <code>int</code>    | Device SIM index    | 1.0.0 |
+| **`id`**    | <code>number</code> | SMS Message id      | 1.0.0 |
+| **`sim`**   | <code>number</code> | Device SIM index    | 1.0.0 |
 | **`phone`** | <code>string</code> | Target phone number | 1.0.0 |
 | **`text`**  | <code>string</code> | SMS Message         | 1.0.0 |
 

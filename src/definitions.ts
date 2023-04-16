@@ -46,7 +46,7 @@ export interface SmsSenderResult {
      * Message SMS id
      * @since 1.0.0
      */
-    id: int,
+    id: number,
 
     /**
      * Delivery status, possible value are 'FAILED', 'SENT', or 'DELIVERED'
