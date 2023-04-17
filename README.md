@@ -37,7 +37,7 @@ SmsSender.addListener('smsSenderDelivered', res => {
 * [`send(...)`](#send)
 * [`checkPermissions()`](#checkpermissions)
 * [`requestPermissions()`](#requestpermissions)
-* [`addListener('smsSenderDelivered', ...)`](#addlistenersmssenderdelivered)
+* [`addListener('smsSenderStatusUpdated', ...)`](#addlistenersmssenderstatusupdated)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
@@ -94,22 +94,22 @@ Request the required permissions
 --------------------
 
 
-### addListener('smsSenderDelivered', ...)
+### addListener('smsSenderStatusUpdated', ...)
 
 ```typescript
-addListener(eventName: 'smsSenderDelivered', listenerFunc: (result: SmsSenderResult) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
+addListener(eventName: 'smsSenderStatusUpdated', listenerFunc: (result: SmsSenderResult) => void) => Promise<PluginListenerHandle> & PluginListenerHandle
 ```
 
 Listen for sms status update
 
 | Param              | Type                                                                             |
 | ------------------ | -------------------------------------------------------------------------------- |
-| **`eventName`**    | <code>'smsSenderDelivered'</code>                                                |
+| **`eventName`**    | <code>'smsSenderStatusUpdated'</code>                                            |
 | **`listenerFunc`** | <code>(result: <a href="#smssenderresult">SmsSenderResult</a>) =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt; & <a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
-**Since:** 1.0.0
+**Since:** 1.1.0
 
 --------------------
 
@@ -135,7 +135,7 @@ Remove all registered listeners
 | Prop         | Type                | Description                                                          | Since |
 | ------------ | ------------------- | -------------------------------------------------------------------- | ----- |
 | **`id`**     | <code>number</code> | Message SMS id                                                       | 1.0.0 |
-| **`status`** | <code>string</code> | Delivery status, possible value are 'FAILED', 'SENT', or 'DELIVERED' | 1.0.0 |
+| **`status`** | <code>string</code> | Delivery status, possible value are 'PENDING', FAILED', 'SENT', or 'DELIVERED' | 1.0.0 |
 
 
 #### SmsSenderOptions

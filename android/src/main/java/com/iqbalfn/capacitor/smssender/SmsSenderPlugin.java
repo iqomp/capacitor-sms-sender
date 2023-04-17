@@ -31,10 +31,54 @@ import com.getcapacitor.annotation.Permission;
         }
 )
 public class SmsSenderPlugin extends Plugin {
+
+    private static final String SMS_SENT = "SMS_SENT";
+    private static final String SMS_DELIVERED = "SMS_DELIVERED";
+
+    @Override
+    public void load() {
+        BroadcastReceiver sendBR = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                JSObject ret = new JSObject();
+                ret.put("id", intent.getExtras().getInt("id"));
+                ret.put("res_status", getResultCode());
+
+                if (getResultCode() == Activity.RESULT_OK) {
+                    ret.put("status", "SENT");
+                } else {
+                    ret.put("status", "FAILED");
+                }
+
+                notifyListeners("smsSenderStatusUpdated", ret);
+            }
+        };
+
+        BroadcastReceiver delvBR = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                JSObject ret = new JSObject();
+                ret.put("id", intent.getExtras().getInt("id"));
+                ret.put("res_status", getResultCode());
+
+                if (getResultCode() == Activity.RESULT_OK) {
+                    ret.put("status", "DELIVERED");
+                } else {
+                    ret.put("status", "FAILED");
+                }
+
+                notifyListeners("smsSenderStatusUpdated", ret);
+            }
+        };
+
+        getContext().registerReceiver(sendBR, new IntentFilter(SMS_SENT));
+        getContext().registerReceiver(delvBR, new IntentFilter(SMS_DELIVERED));
+    }
+
     @PluginMethod
     public void send(PluginCall call) {
         if (!hasRequiredPermissions()) {
-            call.reject("Requested permission not granted");
+            call.reject("Requested permission is not granted");
             return;
         }
 
@@ -43,12 +87,6 @@ public class SmsSenderPlugin extends Plugin {
         String text = call.getString("text");
         String phone = call.getString("phone");
 
-        JSObject ret = new JSObject();
-        ret.put("id", id);
-
-        String SMS_SENT = "SMS_SENT";
-        String SMS_DELIVERED = "SMS_DELIVERED";
-
         int flags;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             flags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE;
@@ -56,56 +94,29 @@ public class SmsSenderPlugin extends Plugin {
             flags = PendingIntent.FLAG_UPDATE_CURRENT;
         }
 
-        PendingIntent sentPI = PendingIntent.getBroadcast(getContext(), 0, new Intent(SMS_SENT), flags);
-        PendingIntent delvPI = PendingIntent.getBroadcast(getContext(), 0, new Intent(SMS_DELIVERED), flags);
+        Intent iSMSSent = new Intent(SMS_SENT);
+        iSMSSent.putExtra("id", id);
+        PendingIntent sentPI = PendingIntent.getBroadcast(getContext(), 0, iSMSSent, flags);
 
-        BroadcastReceiver sendBR = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                switch (getResultCode()) {
-                    case Activity.RESULT_OK:
-                        ret.put("status", "SENT");
-                        break;
-                    default:
-                        ret.put("status", "FAILED");
-                }
-
-                call.resolve(ret);
-            }
-        };
-
-        BroadcastReceiver delvBR = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                JSObject ret = new JSObject();
-
-                switch (getResultCode()) {
-                    case Activity.RESULT_OK:
-                        ret.put("status", "DELIVERED");
-                        break;
-                    default:
-                        ret.put("status", "FAILED");
-                }
-
-                ret.put("id", id);
-                notifyListeners("smsSenderDelivered", ret);
-            }
-        };
-
-        getContext().registerReceiver(sendBR, new IntentFilter(SMS_SENT));
-        getContext().registerReceiver(delvBR, new IntentFilter(SMS_DELIVERED));
+        Intent iSMSDelivered = new Intent(SMS_DELIVERED);
+        iSMSDelivered.putExtra("id", id);
+        PendingIntent delvPI = PendingIntent.getBroadcast(getContext(), 0, iSMSDelivered, flags);
 
         SmsManager manager;
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
-            manager = SmsManager.getDefault();
-        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
             manager = SmsManager.getSmsManagerForSubscriptionId(sim);
         } else {
-            manager = getContext().getSystemService(SmsManager.class)
+            manager = getContext()
+                    .getSystemService(SmsManager.class)
                     .createForSubscriptionId(sim);
         }
 
         manager.sendTextMessage(phone, null, text, sentPI, delvPI);
+
+        JSObject ret = new JSObject();
+        ret.put("id", id);
+        ret.put("status", "PENDING");
+        call.resolve(ret);
     }
 }

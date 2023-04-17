@@ -49,7 +49,7 @@ export interface SmsSenderResult {
     id: number,
 
     /**
-     * Delivery status, possible value are 'FAILED', 'SENT', or 'DELIVERED'
+     * Delivery status, possible value are 'PENDING', FAILED', 'SENT', or 'DELIVERED'
      * @since 1.0.0
      */
     status: string
@@ -76,10 +76,10 @@ export interface SmsSenderPlugin {
 
     /**
      * Listen for sms status update
-     * @since 1.0.0
+     * @since 1.1.0
      */
     addListener(
-        eventName: 'smsSenderDelivered',
+        eventName: 'smsSenderStatusUpdated',
         listenerFunc: (result: SmsSenderResult) => void
     ): Promise<PluginListenerHandle> & PluginListenerHandle;
 
